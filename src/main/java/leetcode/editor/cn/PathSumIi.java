@@ -34,23 +34,7 @@ import java.util.List;
 
 public class PathSumIi {
     public static void main(String[] args) {
-        TreeNode tn5 = new TreeNode(11);
-        tn5.left = new TreeNode(7);
-        tn5.right = new TreeNode(2);
-        TreeNode tn7 = new TreeNode(4);
-        tn7.left = new TreeNode(5);
-        tn7.right = new TreeNode(1);
-        TreeNode tn8 = new TreeNode(4);
-        tn8.left = tn7;
-        TreeNode tn9 = new TreeNode(8);
-        tn9.left = new TreeNode(13);
-        tn9.right = tn7;
-        TreeNode root = new TreeNode(5);
-        root.left = tn8;
-        root.right = tn9;
         Solution solution = new PathSumIi().new Solution();
-        List<List<Integer>> res = solution.pathSum(root, 22);
-        System.out.println(res);
     }
     // Definition for a binary tree node.
     public static class TreeNode {
@@ -68,31 +52,30 @@ public class PathSumIi {
 
         private LinkedList<Integer> path = new LinkedList<>();
 
-        // private LinkedList<TreeNode> nodes = new LinkedList<>();
+        boolean flag = false;
 
         public List<List<Integer>> pathSum(TreeNode root, int sum) {
-            backtrace(root, sum, new LinkedList<>());
-            return this.list;
-        }
-
-        private void backtrace(TreeNode node, int sum, LinkedList<Integer> path) {
-            if (node == null) return;
-            path.addLast(node.val);
-            int d = sum - node.val;
+            if (root == null) return list;
+            path.add(root.val);
+            sum -= root.val;
             // must be root-to-leaf
-            if (d == 0 && node.left == null && node.right == null) {
-                // must clone a copy
-                this.list.add(new ArrayList<>(path));
-                path.removeLast();
-                return;
+            if (sum == 0 && root.left == null && root.right == null) {
+                list.add(new ArrayList<>(path)); // must clone a copy
+                flag = true;
             }
-            if (node.left != null) {
-                backtrace(node.left, d, path);
+            if (root.left != null) {
+                pathSum(root.left, sum);
             }
-            if (node.right != null) {
-                backtrace(node.right, d, path);
+            if (flag) {
+                flag = false;
+            } else {
+                // if left leaf meet requirement, right leaf can not, this step can be trimmed?
+                if (root.right != null) {
+                    pathSum(root.right, sum);
+                }
             }
-            path.removeLast();
+            path.remove(path.size() - 1);
+            return list;
         }
     }
     //leetcode submit region end(Prohibit modification and deletion)
